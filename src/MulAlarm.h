@@ -5,13 +5,13 @@
 #include "ev.h"
 
 typedef struct alarm{
-	ev_periodic timer;
-	struct tm timeLocal;
+	ev_periodic alarmSet;
+	time_t time;
 	struct alarm* pNext;
 }ALARM;
 
-void alarmInit();
-void alarmAdd(EV_P_ ev_periodic* alarmSet,struct tm timeSet);
+void alarmList(ALARM* pAlarmList);
+void alarmAdd(EV_P_ ALARM** pAlarmList,time_t timeSet);
 
 #endif
 

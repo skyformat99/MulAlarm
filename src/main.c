@@ -4,23 +4,24 @@
 #include "ev.h"
 #include "MulAlarm.h"
 
-struct ev_loop* alarmLoop;
+struct ev_loop* pAlarmLoop;
 ev_io inputSet;
-ev_periodic alarmSet;
+ALARM* pAlarmList = 0;
 
 static void cbCmd(EV_P_ ev_io* w,int revents){
 	char cmd = getchar();
 	getchar();
 	if(cmd == 'n' || cmd == 'N'){
 		puts("\nAlarm Setting");
-		struct tm timeSet;
-		scanf("%d/%d/%d-%d:%d:%d",&timeSet.tm_year,&timeSet.tm_mon,&timeSet.tm_mday,&timeSet.tm_hour,&timeSet.tm_min,&timeSet.tm_sec);
+		struct tm tmSet;
+		scanf("%d/%d/%d-%d:%d:%d",&tmSet.tm_year,&tmSet.tm_mon,&tmSet.tm_mday,&tmSet.tm_hour,&tmSet.tm_min,&tmSet.tm_sec);
 		getchar();
-		timeSet.tm_year -= 1900;
-		timeSet.tm_mon --;
-		alarmAdd(alarmLoop,&alarmSet,timeSet);
+		tmSet.tm_mon--;
+		tmSet.tm_year -= 1900;
+		alarmAdd(pAlarmLoop,&pAlarmList,mktime(&tmSet));
 	}
 	else if(cmd == 'l' || cmd == 'L'){
+		alarmList(pAlarmList);
 	}
 	else if(cmd == 'd' || cmd == 'D'){
 	}
@@ -34,14 +35,14 @@ static void cbCmd(EV_P_ ev_io* w,int revents){
 }
 
 int main(){
-	alarmLoop = EV_DEFAULT;
+	pAlarmLoop = EV_DEFAULT;
 	ALARM test;
 	
 	ev_io_init(&inputSet,cbCmd,0,EV_READ);
-	ev_io_start(alarmLoop,&inputSet);
+	ev_io_start(pAlarmLoop,&inputSet);
 	
 	puts("\nWelcome to MulAlarm!\nNew[n]\t\tList[l]\t\tDelete[d]\t\tQuit[q]");
-	ev_run(alarmLoop,0);
+	ev_run(pAlarmLoop,0);
 	
 	return 0;
 }
