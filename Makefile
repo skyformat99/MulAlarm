@@ -10,11 +10,14 @@ all:build
 
 build:${OUTPUT}
 
-${OUTPUT}:${SRC} ${HEADER} ${LIBDIR}/libev.a
+${OUTPUT}:${SRC} ${HEADER} ${LIBDIR}/libev.a bin
 	${CC} ${SRC} -o${OUTPUT} -I${LIBDIR} -L${LIBDIR} ${LIBFLAG}
+
+bin:
+	mkdir bin
 
 .PHONY:clean
 
 clean:
-	rm -rf bin/*
+	rm -rf bin
 
