@@ -1,4 +1,3 @@
-
 CC = gcc
 SRC = src/main.c src/MulAlarm.c
 HEADER = src/MulAlarm.h

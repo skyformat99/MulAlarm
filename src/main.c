@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <math.h>
 #include <time.h>
 #include "ev.h"
 #include "MulAlarm.h"
@@ -11,27 +10,38 @@ ALARM* pAlarmList = 0;
 static void cbCmd(EV_P_ ev_io* w,int revents){
 	char cmd = getchar();
 	getchar();
-	if(cmd == 'n' || cmd == 'N'){
-		puts("\nAlarm Setting");
-		struct tm tmSet;
-		scanf("%d/%d/%d-%d:%d:%d",&tmSet.tm_year,&tmSet.tm_mon,&tmSet.tm_mday,&tmSet.tm_hour,&tmSet.tm_min,&tmSet.tm_sec);
-		getchar();
-		tmSet.tm_mon--;
-		tmSet.tm_year -= 1900;
-		alarmAdd(pAlarmLoop,&pAlarmList,mktime(&tmSet));
-	}
-	else if(cmd == 'l' || cmd == 'L'){
+	if(cmd == 'l' || cmd == 'L'){
 		alarmList(pAlarmList);
 	}
+	else if(cmd == 'n' || cmd == 'N'){
+		puts("\nAlarm Setting at...[yyyy/MM/dd-HH:mm:ss]");
+		alarmAdd(pAlarmLoop,&pAlarmList,timeSet());
+	}
 	else if(cmd == 'd' || cmd == 'D'){
+		unsigned int numRm;
+		alarmList(pAlarmList);
+		puts("\nWhich Alarm do you want to delete?[No.]");
+		scanf("%u",&numRm);
+		getchar();
+		alarmDel(pAlarmLoop,&pAlarmList,numRm);
+	}
+	else if(cmd == 'm' || cmd == 'M'){
+		unsigned int numEd;
+		alarmList(pAlarmList);
+		puts("\nWhich Alarm do you want to modify?[No.]");
+		scanf("%u",&numEd);
+		getchar();
+		puts("\nAlarm Modify to...[yyyy/MM/dd-HH:mm:ss]");
+		alarmMod(pAlarmLoop,&pAlarmList,numEd,timeSet());
 	}
 	else if(cmd == 'q' || cmd == 'Q'){
 		ev_break(EV_A_ EVBREAK_ALL);
+		return;
 	}
 	else{
 		puts("\nInvalid Command");
 	}
-	puts("\nNew[n]\t\tList[l]\t\tDelete[d]\t\tQuit[q]");
+	puts("\nNew[n]  List[l]  Delete[d]  Modify[m]  Quit[q]");
 }
 
 int main(){
@@ -41,7 +51,7 @@ int main(){
 	ev_io_init(&inputSet,cbCmd,0,EV_READ);
 	ev_io_start(pAlarmLoop,&inputSet);
 	
-	puts("\nWelcome to MulAlarm!\nNew[n]\t\tList[l]\t\tDelete[d]\t\tQuit[q]");
+	puts("\nWelcome to MulAlarm!\nNew[n]  List[l]  Delete[d]  Modify[m]  Quit[q]");
 	ev_run(pAlarmLoop,0);
 	
 	return 0;
